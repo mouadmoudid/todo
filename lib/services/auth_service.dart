@@ -57,7 +57,14 @@ class AuthService {
 
   // Déconnexion
   Future<void> logout() async {
+    // Firebase sign out
     await _auth.signOut();
+    // If the user used Google Sign-In, make sure to sign out the Google session as well
+    try {
+      await GoogleSignIn().signOut();
+    } catch (_) {
+      // ignore errors from GoogleSignIn signOut - not critical
+    }
   }
 
   // Utilisateur actuel

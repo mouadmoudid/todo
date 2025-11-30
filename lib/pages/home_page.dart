@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../services/auth_service.dart';
+import 'login_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -75,8 +76,24 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _logout() async {
-    await AuthService().logout();
-    if (mounted) Navigator.pop(context);
+    try {
+      await AuthService().logout();
+      if (mounted) {
+        // Ensure all previous routes are removed so pressing back won't land on a blank page
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginPage()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      // Show a small error message instead of failing silently
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Erreur lors de la déconnexion')),
+        );
+      }
+    }
   }
 
   @override
