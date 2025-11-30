@@ -1,0 +1,37 @@
+name: todo_app
+description: Une Todo App Flutter avec Firebase et Google Sign-In
+
+publish_to: 'none' 
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.1.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Firebase
+  firebase_core: ^2.20.0
+  firebase_auth: ^4.11.0
+  cloud_firestore: ^4.7.0
+
+  # Google Sign-In
+  google_sign_in: ^6.1.1
+
+  # UI & Material
+  cupertino_icons: ^1.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/google_logo.png
+    - assets/firebase_logo.png
+  
+
