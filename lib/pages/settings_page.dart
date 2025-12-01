@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+// firebase_auth is not required in this file anymore
 
 import '../services/settings_service.dart';
 
@@ -57,7 +59,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
 
                   const SizedBox(height: 16),
+                  // Device → account import flow has been removed — no import prompt
                   const Text('Couleur primaire', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  const Text('Palette rapide', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
@@ -75,6 +80,86 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       );
                     }).toList(),
+                  ),
+
+                  const SizedBox(height: 12),
+                  if (_service.recentColors.isNotEmpty) ...[
+                    const Text('Couleurs récentes', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      children: _service.recentColors.map((v) {
+                        final c = Color(v);
+                        return GestureDetector(
+                          onTap: () => _service.updatePrimaryColor(v),
+                          onLongPress: () async {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                title: const Text('Supprimer couleur récente ?'),
+                                content: const Text('Supprimer cette couleur de l’historique ?'),
+                                actions: [
+                                  TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Annuler')),
+                                  ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Supprimer')),
+                                ],
+                              ),
+                            );
+                            if (confirm == true) {
+                              await _service.removeRecentColor(v);
+                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Couleur supprimée')));
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: const BoxDecoration(shape: BoxShape.circle),
+                            child: CircleAvatar(backgroundColor: c, radius: 20),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.color_lens),
+                        label: const Text('Personnaliser…'),
+                        onPressed: () async {
+                          // start color picker dialog
+                          Color current = Color(settings.primaryColorValue);
+                          Color picked = current;
+                          await showDialog(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                              title: const Text('Choisir une couleur primaire'),
+                              content: SingleChildScrollView(
+                                child: ColorPicker(
+                                  pickerColor: current,
+                                  onColorChanged: (c) => picked = c,
+                                  showLabel: true,
+                                  pickerAreaHeightPercent: 0.6,
+                                ),
+                              ),
+                              actions: [
+                                TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    _service.updatePrimaryColor(picked.value);
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+
+                      const SizedBox(width: 12),
+                      // No device-import action — importing device settings has been removed
+                    ],
                   ),
 
                   const SizedBox(height: 16),
