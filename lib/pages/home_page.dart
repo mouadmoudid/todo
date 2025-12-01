@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../services/auth_service.dart';
 import 'login_page.dart';
+import 'profile_page.dart';
+import 'settings_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -102,6 +104,16 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Mes tâches'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage())),
+            tooltip: 'Profil',
+          ),
+          IconButton(
+            icon: const Icon(Icons.palette),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage())),
+            tooltip: 'Paramètres',
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: _logout,
