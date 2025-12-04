@@ -16,6 +16,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
   bool _loading = false;
+  bool _passwordVisible = false;
+  bool _confirmVisible = false;
   final AuthService _authService = AuthService();
 
   void _register() async {
@@ -75,10 +77,14 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
+                  obscureText: !_passwordVisible,
+                  decoration: InputDecoration(
                     labelText: 'Mot de passe',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(_passwordVisible ? Icons.visibility : Icons.visibility_off),
+                      onPressed: () => setState(() => _passwordVisible = !_passwordVisible),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Mot de passe requis';
@@ -89,10 +95,14 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _confirmController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
+                  obscureText: !_confirmVisible,
+                  decoration: InputDecoration(
                     labelText: 'Confirmer mot de passe',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(_confirmVisible ? Icons.visibility : Icons.visibility_off),
+                      onPressed: () => setState(() => _confirmVisible = !_confirmVisible),
+                    ),
                   ),
                   validator: (value) {
                     if (value != _passwordController.text) return 'Les mots de passe ne correspondent pas';
@@ -107,6 +117,15 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: _loading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : const Text("S'inscrire"),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text('Retour à la connexion'),
+                    onPressed: () => Navigator.pop(context),
                   ),
                 ),
               ],

@@ -10,9 +10,11 @@ class AuthService {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       return userCredential.user;
+    } on FirebaseAuthException {
+      rethrow; // Let the caller handle specific auth exceptions
     } catch (e) {
-      print(e);
-      return null;
+      print('Login error: $e');
+      rethrow;
     }
   }
 
